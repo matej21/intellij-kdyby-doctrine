@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>cz.matej21.intellij.kdyby.doctrine</id>
     <name>Kdyby Doctrine support</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <vendor email="matej21@matej21.cz" url="http://www.matej21.cz">David Matejka</vendor>
 
     <depends>com.intellij.modules.lang</depends>
@@ -12,7 +12,12 @@
   ]]></description>
 
     <change-notes><![CDATA[
-    
+    <h2>0.1.1</h2>
+    <ul>
+        <li>Bug fixes</li>
+        <li>Magic methods support (findBy* and findOneBy*)</li>
+        <li>Foo::getClassName() support</li>
+    </ul>
     <h2>0.1.0</h2>
     <ul>
         <li>First proof of concept</li>
