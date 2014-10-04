@@ -1,0 +1,44 @@
+<idea-plugin version="2">
+    <id>cz.matej21.intellij.kdyby.doctrine</id>
+    <name>Kdyby Doctrine support</name>
+    <version>0.1.0</version>
+    <vendor email="matej21@matej21.cz" url="http://www.matej21.cz">David Matejka</vendor>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.jetbrains.php</depends>
+
+    <description><![CDATA[
+      Support for <strong>Kdyby Doctrine</strong> library
+  ]]></description>
+
+    <change-notes><![CDATA[
+    
+    <h2>0.1.0</h2>
+    <ul>
+        <li>First proof of concept</li>
+    </ul>
+
+  ]]>
+    </change-notes>
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="133"/>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <php.typeProvider2 implementation="cz.matej21.intellij.kdyby.doctrine.RepositoryTypeProvider"/>
+        <php.typeProvider2 implementation="cz.matej21.intellij.kdyby.doctrine.RepositoryMethodTypeProvider"/>
+        <php.typeProvider2 implementation="cz.matej21.intellij.kdyby.doctrine.ForeachEntityTypeProvider"/>
+    </extensions>
+</idea-plugin>
