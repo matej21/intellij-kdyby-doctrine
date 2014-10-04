@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.jetbrains.php.PhpIndex;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.*;
+import com.jetbrains.php.lang.psi.visitors.PhpRecursiveElementVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +59,21 @@ public class ElementValueResolver {
 					}
 				}
 			}
+		} else if (element instanceof MethodReference) {
+			MethodReference methodReference = (MethodReference) element;
+			ClassReference classReference = (ClassReference) methodReference.getClassReference();
+			for (PhpClass phpClass : getClasses(classReference, element.getProject())) {
+				Method method = phpClass.findMethodByName(methodReference.getName());
+				if (method == null) {
+					continue;
+				}
+				ReturnVisitor returnVisitor = new ReturnVisitor(classReference);
+				method.accept(returnVisitor);
+				if (returnVisitor.getResult() != null) {
+					return returnVisitor.getResult();
+				}
+
+			}
 		}
 		throw new UnresolvableValueException();
 
@@ -74,6 +90,31 @@ public class ElementValueResolver {
 	}
 
 	private class UnresolvableValueException extends Exception {
+	}
+
+	private class ReturnVisitor extends PhpRecursiveElementVisitor {
+
+		protected String result;
+
+		protected ClassReference classReference;
+
+		public ReturnVisitor(ClassReference classReference) {
+			this.classReference = classReference;
+		}
+
+		@Override
+		public void visitPhpReturn(PhpReturn returnStatement) {
+			PsiElement el = returnStatement.getArgument();
+			if (el instanceof FunctionReference) {
+				if (((FunctionReference) el).getName().equals("get_called_class")) {
+					result = classReference.getFQN();
+				}
+			}
+		}
+
+		public String getResult() {
+			return result;
+		}
 	}
 }
 
