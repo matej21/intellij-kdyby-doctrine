@@ -21,6 +21,7 @@ public class RepositoryMethodTypeProvider implements PhpTypeProvider2 {
 	public static final char KEY = '\u2101';
 	private static final HashSet<String> singleEntityMethods = new HashSet<String>(Arrays.asList("find", "findOneBy"));
 	private static final HashSet<String> setEntityMethods = new HashSet<String>(Arrays.asList("findAll", "findBy", "fetch"));
+	private static final HashSet<String> magicMethods = new HashSet<String>(Arrays.asList("findOneBy", "findBy"));
 
 
 	@Override
@@ -42,14 +43,18 @@ public class RepositoryMethodTypeProvider implements PhpTypeProvider2 {
 		PhpType type = ((PhpTypedElement) psiElement.getChildren()[0]).getType();
 		PhpTypeAnalyserVisitor analyzer = new PhpTypeAnalyserVisitor(0);
 		psiElement.accept(analyzer);
+		String methodName = getMethodName(ref);
+		if (!singleEntityMethods.contains(methodName) && !setEntityMethods.contains(methodName)) {
+			methodName = null;
+		}
 		for (String strType : type.getTypes()) {
 			if (strType.length() < 2 && strType.charAt(0) == '#' || strType.charAt(1) != RepositoryTypeProvider.KEY) {
 				continue;
 			}
 			String entityType = "";
-			if (singleEntityMethods.contains(ref.getName()) || setEntityMethods.contains(ref.getName())) {
+			if (methodName != null) {
 				entityType = strType.substring(2, strType.indexOf("."));
-				if (setEntityMethods.contains(ref.getName())) {
+				if (setEntityMethods.contains(methodName)) {
 					entityType += "[]";
 				}
 			}
@@ -83,5 +88,16 @@ public class RepositoryMethodTypeProvider implements PhpTypeProvider2 {
 		result.addAll(phpIndex.getBySignature(signature));
 
 		return result;
+	}
+
+	private String getMethodName(MethodReference ref) {
+		String methodName = ref.getName();
+		for (String magic : magicMethods) {
+			if (methodName != null && methodName.startsWith(magic)) {
+				methodName = magic;
+				break;
+			}
+		}
+		return methodName;
 	}
 }
