@@ -1,5 +1,6 @@
 package cz.matej21.intellij.kdyby.doctrine;
 
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.jetbrains.php.PhpIndex;
@@ -28,6 +29,9 @@ public class RepositoryTypeProvider implements PhpTypeProvider2 {
 	@Nullable
 	@Override
 	public String getType(PsiElement psiElement) {
+		if (DumbService.getInstance(psiElement.getProject()).isDumb()) {
+			return null;
+		}
 		if (!(psiElement instanceof MethodReference)) {
 			return null;
 		}
